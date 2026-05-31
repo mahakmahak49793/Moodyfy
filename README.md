@@ -7,7 +7,7 @@ Features
 5. Mood history and emotional trends
 6. Secure user authentication
 7. Responsive and user-friendly interface
-Tech Stack
+Tech Stack Used
 Frontend: React.js
 Backend: Node.js, Express.js
 Database: MongoDB
