@@ -1,4 +1,3 @@
-Moodyfy
 Moodyfy is an AI-powered mood journaling application that helps users track their emotions, maintain a daily journal, and gain personalized insights into their emotional well-being. Users can log moods, write reflections, visualize emotional trends, and receive AI-generated analysis to better understand their thoughts and feelings over time.
 Features
 1. Daily mood tracking
