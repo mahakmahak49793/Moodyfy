@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import { analyzeJournal, createJournal } from "../../features/journal/journalSlice";
+import {
+  analyzeJournal,
+  createJournal,
+} from "../../features/journal/journalSlice";
+import { MenuIcon } from "lucide-react";
 
 const MOODS = [
-  { label: "Peaceful", emoji: "🌿", dot: "bg-teal-400", value: "calm" },
-  { label: "Grateful", emoji: "✨", dot: "bg-amber-400", value: "happy" },
-  { label: "Anxious",  emoji: "🌊", dot: "bg-rose-400", value: "stressed" },
-  { label: "Joyful",   emoji: "☀️", dot: "bg-amber-400", value: "happy" },
-  { label: "Tired",    emoji: "🌙", dot: "bg-indigo-400", value: "sad" },
+  { label: "Peaceful", dot: "bg-teal-400", value: "calm" },
+  { label: "Grateful", dot: "bg-amber-400", value: "happy" },
+  { label: "Anxious", dot: "bg-rose-400", value: "stressed" },
+  { label: "Joyful", dot: "bg-amber-400", value: "happy" },
+  { label: "Tired", dot: "bg-indigo-400", value: "sad" },
 ];
 
 interface JournalFormProps {
@@ -15,7 +19,10 @@ interface JournalFormProps {
   onToggleSidebar: () => void;
 }
 
-const JournalForm = ({ journalsCount = 0, onToggleSidebar }: JournalFormProps) => {
+const JournalForm = ({
+  journalsCount = 0,
+  onToggleSidebar,
+}: JournalFormProps) => {
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -30,7 +37,7 @@ const JournalForm = ({ journalsCount = 0, onToggleSidebar }: JournalFormProps) =
         title: title || content.slice(0, 50),
         content,
         mood,
-      })
+      }),
     );
 
     if (createJournal.fulfilled.match(resultAction)) {
@@ -46,6 +53,16 @@ const JournalForm = ({ journalsCount = 0, onToggleSidebar }: JournalFormProps) =
 
   return (
     <div className="flex flex-col h-full bg-transparent">
+      <div className="px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-8 ">
+        {/* Your Entries Button - visible ONLY on mobile */}
+        <button
+          onClick={onToggleSidebar}
+          className="lg:hidden rounded-full border border-white/50 bg-white/30 backdrop-blur-sm px-3 py-2 text-xs font-light text-white transition-all hover:border-[rgb(3_131_153)] hover:bg-white/40 shadow-sm flex items-center gap-1"
+        >
+          <MenuIcon size={14} />
+          {journalsCount} Journals
+        </button>
+      </div>
       {/* Header with New Reflection heading and buttons on top right */}
       <div className="px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-0 flex justify-between items-start gap-4">
         <p
@@ -67,15 +84,7 @@ const JournalForm = ({ journalsCount = 0, onToggleSidebar }: JournalFormProps) =
                 : "bg-[rgb(3,131,153)] text-white hover:bg-[rgb(2,100,120)] disabled:opacity-40"
             }`}
           >
-            {saved ? "✓ Saved" : "Save entry"}
-          </button>
-
-          {/* Your Entries Button - visible ONLY on mobile */}
-          <button
-            onClick={onToggleSidebar}
-            className="lg:hidden rounded-full border border-white/50 bg-white/30 backdrop-blur-sm px-3 py-2 text-xs font-light text-white transition-all hover:border-[rgb(3_131_153)] hover:bg-white/40 shadow-sm flex items-center gap-1"
-          >
-            📖 {journalsCount}
+            {saved ? "✓ Saved" : "Save"}
           </button>
         </div>
       </div>
@@ -92,7 +101,6 @@ const JournalForm = ({ journalsCount = 0, onToggleSidebar }: JournalFormProps) =
                 : "border-white/50 bg-white/25 text-white/90 hover:border-white/70 hover:bg-white/35"
             }`}
           >
-            <span className="text-sm sm:text-base">{m.emoji}</span>
             <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} />
             {m.label}
           </button>

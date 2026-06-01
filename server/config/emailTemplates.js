@@ -1,88 +1,40 @@
 const getOTPEmailTemplate = (otp) => `
-  <div style="
-    font-family: Georgia, 'Times New Roman', serif;
-    max-width: 480px;
-    margin: auto;
-    padding: 40px 32px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-  ">
+  <div class="font-serif max-w-[480px] mx-auto py-10 px-8 rounded-2xl border border-slate-200 bg-white">
 
     <!-- Logo -->
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
-      <div style="
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        background: rgb(3, 131, 153);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        line-height: 40px;
-        text-align: center;
-      ">🌿</div>
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-[rgb(3,131,153)] flex items-center justify-center text-[20px] leading-10 text-center">
+        🌿
+      </div>
       <div>
-        <div style="
-          font-family: Georgia, serif;
-          font-size: 20px;
-          font-weight: 500;
-          letter-spacing: 0.05em;
-          color: #1e293b;
-          line-height: 1.2;
-        ">Moodyfy</div>
-        <div style="
-          font-family: Arial, sans-serif;
-          font-size: 11px;
-          font-weight: 300;
-          color: #94a3b8;
-          letter-spacing: 0.02em;
-        ">Emotional wellness journal</div>
+        <div class="font-serif text-[20px] font-medium tracking-[0.05em] text-slate-800 leading-tight">
+          Moodyfy
+        </div>
+        <div class="font-sans text-[11px] font-light tracking-[0.02em] text-slate-400">
+          Emotional wellness journal
+        </div>
       </div>
     </div>
 
     <!-- Divider -->
-    <hr style="border: none; border-top: 1px solid #f1f5f9; margin-bottom: 28px;" />
+    <hr class="border-none border-t border-slate-100 mb-7" />
 
     <!-- Body -->
-    <h2 style="
-      font-family: Georgia, serif;
-      font-size: 22px;
-      font-weight: 500;
-      color: #1e293b;
-      margin: 0 0 8px;
-    ">Verify your email</h2>
+    <h2 class="font-serif text-[22px] font-medium text-slate-800 m-0 mb-2">
+      Verify your email
+    </h2>
 
-    <p style="
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: #64748b;
-      font-weight: 300;
-      line-height: 1.6;
-      margin: 0 0 28px;
-    ">
+    <p class="font-sans text-sm text-slate-500 font-light leading-relaxed m-0 mb-7">
       Welcome to Moodyfy! Use the code below to complete your signup.
-      It expires in <strong style="color: #475569;">10 minutes</strong>.
+      It expires in <strong class="text-slate-600">10 minutes</strong>.
     </p>
 
     <!-- OTP Box -->
-    <div style="text-align: center; margin: 0 0 32px;">
-      <div style="
-        display: inline-block;
-        font-family: 'Courier New', monospace;
-        font-size: 38px;
-        font-weight: 700;
-        letter-spacing: 14px;
-        color: rgb(3, 131, 153);
-        background: rgba(3, 131, 153, 0.07);
-        padding: 18px 28px;
-        border-radius: 14px;
-        border: 1px solid rgba(3, 131, 153, 0.15);
-      ">${otp}</div>
+    <div class="text-center mb-8">
+      <div class="inline-block font-mono text-[38px] font-bold tracking-[0.35em] text-[rgb(3,131,153)] bg-[rgba(3,131,153,0.07)] py-[18px] px-7 rounded-xl border border-[rgba(3,131,153,0.15)]">
+        ${otp}
+      </div>
     </div>
-
-  
 
   </div>
 `;

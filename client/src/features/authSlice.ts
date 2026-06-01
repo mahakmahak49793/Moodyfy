@@ -11,6 +11,7 @@ import {
   registerUserAPI,
   loginUserAPI,
   verifyOTPAPI,
+  resendOTPAPI, 
 } from "./authAPI";
 
 import type {
@@ -18,6 +19,7 @@ import type {
   LoginData,
   VerifyOTPData,
   AuthResponse,
+   ResendOTPData,
 } from "./authAPI";
 
 interface User {
@@ -42,6 +44,22 @@ const initialState: AuthState = {
   pendingEmail: null,
 };
 
+export const resendOTP = createAsyncThunk<
+  AuthResponse,
+  ResendOTPData,
+  { rejectValue: string }
+>(
+  "auth/resendOTP",
+  async (data, thunkAPI) => {
+    try {
+      return await resendOTPAPI(data);
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to resend OTP"
+      );
+    }
+  }
+);
 export const registerUser = createAsyncThunk<
   AuthResponse,
   RegisterData,
@@ -95,6 +113,8 @@ export const verifyOTP = createAsyncThunk<
     }
   }
 );
+
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -150,6 +170,17 @@ extraReducers: (builder) => {
       state.token = action.payload.token;
       localStorage.setItem("token", action.payload.token);
     })
+    .addCase(resendOTP.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(resendOTP.fulfilled, (state) => {
+  state.loading = false;
+})
+.addCase(resendOTP.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload || "Failed to resend OTP";
+})
     .addCase(loginUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Something went wrong";

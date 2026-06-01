@@ -9,6 +9,8 @@ import {
 } from "../features/gratitude/gratitudeSlice";
 import type { Gratitude } from "../features/gratitude/gratitudeTypes";
 import MobileGratitudeSheet from "../components/gratitude/MobileGratitudeSheet";
+import BackgroundImage from "../components/common/BackgroundImage";
+import {DeleteModal} from "../components/common/DeleteModal";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const toDateKey = (d: string) => new Date(d).toLocaleDateString("en-CA");
@@ -43,63 +45,6 @@ const CARD_ACCENT = [
   { dot: "bg-indigo-400", text: "text-indigo-800", ring: "ring-indigo-200/60" },
   { dot: "bg-rose-400",   text: "text-rose-800",   ring: "ring-rose-200/60"   },
 ];
-
-// ─── DELETE CONFIRMATION MODAL ────────────────────────────────────────────────
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, title }: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  onConfirm: () => void;
-  title?: string;
-}) => {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={onClose}
-          >
-            <motion.div
-              className="max-w-sm w-full bg-white rounded-2xl shadow-2xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-6 text-center">
-                <h3 className="font-serif text-xl text-slate-800 mb-2">Delete Gratitude?</h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  {title || "Are you sure you want to delete this moment? This action cannot be undone."}
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={onClose}
-                    className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-all font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={onConfirm}
-                    className="flex-1 px-4 py-2.5 bg-rose-500 text-white rounded-xl hover:bg-rose-600 transition-all font-medium"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-};
 
 // ─── EDIT MODAL FOR DESKTOP (Diary Style) ─────────────────────────────────────
 const EditModal = ({ isOpen, onClose, gratitude, onSave }: { 
@@ -202,101 +147,7 @@ const EditModal = ({ isOpen, onClose, gratitude, onSave }: {
   );
 };
 
-// ─── 1. FULL-SCREEN DIARY COVER ───────────────────────────────────────────────
-const DiaryCover = ({ onOpen }: { onOpen: () => void }) => {
-  const [phase, setPhase] = useState<"idle"|"opening"|"done">("idle");
-
-  const open = () => {
-    if (phase !== "idle") return;
-    setPhase("opening");
-    setTimeout(() => { setPhase("done"); onOpen(); }, 900);
-  };
-
-  useEffect(() => {
-    const t = setTimeout(open, 3000);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-40 flex flex-col items-center justify-center cursor-pointer select-none"
-      style={{
-        backgroundImage: `
-          linear-gradient(to bottom,
-            rgba(2,28,38,0.72) 0%,
-            rgba(3,60,80,0.60) 35%,
-            rgba(3,80,100,0.55) 65%,
-            rgba(2,50,65,0.75) 100%
-          ),
-          url('https://img.freepik.com/premium-photo/calm-ocean-moody-sky_1179475-44119.jpg?semt=ais_hybrid&w=740&q=80')
-        `,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-      }}
-      onClick={open}
-      animate={{ y: phase === "opening" ? "-100%" : "0%" }}
-      transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
-    >
-      <motion.div
-        initial={{ scale: 0.88, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative"
-        style={{ width: 220, height: 290 }}
-      >
-        <div className="absolute -bottom-4 left-4 right-4 h-8 rounded-full"
-          style={{ background: "rgba(0,0,0,0.35)", filter: "blur(12px)" }} />
-        <div className="absolute inset-0 rounded-r-2xl rounded-l-sm"
-          style={{ background: "linear-gradient(160deg, #0e4155 0%, #082d3e 100%)" }} />
-        <div className="absolute top-0 bottom-0 left-0 w-5 rounded-l-sm"
-          style={{ background: "linear-gradient(to right, #041e28, #0a3345)" }} />
-        <div className="absolute top-1 bottom-1 right-0 w-2 rounded-r-2xl"
-          style={{ background: "linear-gradient(to left, #e8f4f0, #d0ebe5)" }} />
-        <div className="absolute top-0 bottom-0 left-5 right-2 rounded-r-2xl flex flex-col items-center justify-center gap-3 px-5"
-          style={{ background: "linear-gradient(155deg, rgba(3,90,115,0.95) 0%, rgba(2,60,80,0.98) 100%)" }}
-        >
-          <div className="w-full h-px bg-teal-400/30" />
-          <motion.div
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="text-3xl"
-          >🌿</motion.div>
-          <p className="font-serif italic text-teal-100 text-lg text-center leading-snug tracking-wide">
-            Gratitude
-          </p>
-          <p className="font-serif italic text-teal-300/60 text-xs text-center">
-            small beautiful things
-          </p>
-          <div className="w-full h-px bg-teal-400/30" />
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="mt-10 flex flex-col items-center gap-2"
-      >
-        <motion.div
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-teal-300/60 text-xs tracking-widest uppercase font-light"
-        >
-          tap to open
-        </motion.div>
-        <motion.div
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-teal-200/40 text-lg"
-        >
-          ↑
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// ─── 2. STREAK CALENDAR WITH BOTTOM SHEET ─────────────────────────────────────
+// ─── STREAK CALENDAR WITH BOTTOM SHEET ─────────────────────────────────────
 const StreakCalendar = ({ gratitudes }: { gratitudes: Gratitude[] }) => {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -532,7 +383,7 @@ const StreakCalendar = ({ gratitudes }: { gratitudes: Gratitude[] }) => {
   );
 };
 
-// ─── 3. DIARY WRITE AREA ─────────────────────────────────────────────────────
+// ─── DIARY WRITE AREA ─────────────────────────────────────────────────────
 const DiaryWriteArea = ({
   onSubmit, loading, prompt, onClearPrompt,
 }: {
@@ -609,9 +460,7 @@ const DiaryWriteArea = ({
 
       {/* Footer */}
       <div className="px-5 py-3 flex items-center justify-between border-t border-teal-100/50">
-        <div className="text-xs font-mono text-gray-400">
-          Write freely ✍️
-        </div>
+        
         <div className="flex items-center gap-2">
           <AnimatePresence>
             {text.length > 0 && (
@@ -640,11 +489,11 @@ const DiaryWriteArea = ({
   );
 };
 
-// ─── 4. GRATITUDE CARD WITH DELETE CONFIRMATION ─────────────────────────────
+// ─── GRATITUDE CARD WITH DELETE CONFIRMATION ─────────────────────────────
 const GratitudeCard = ({
-  gratitude, index, onDelete, onEdit, isMobile, onDeleteClick,
+  gratitude, index, onEdit, isMobile, onDeleteClick,
 }: {
-  gratitude: Gratitude; index: number; onDelete: (id: string) => void; onEdit: (g: Gratitude) => void;
+  gratitude: Gratitude; index: number; onEdit: (g: Gratitude) => void;
   isMobile?: boolean; onDeleteClick: (g: Gratitude) => void;
 }) => {
   const accent = CARD_ACCENT[index % CARD_ACCENT.length];
@@ -693,7 +542,7 @@ const GratitudeCard = ({
   );
 };
 
-// ─── 5. MEMORY SURFACER ─────────────────────────────────────────────────
+// ─── MEMORY SURFACER ─────────────────────────────────────────────────
 const MemorySurface = ({ gratitudes }: { gratitudes: Gratitude[] }) => {
   const [memory, setMemory]   = useState<Gratitude | null>(null);
   const [isOpening, setIsOpening] = useState(false);
@@ -848,7 +697,6 @@ const MemorySurface = ({ gratitudes }: { gratitudes: Gratitude[] }) => {
 const GratitudePage = () => {
   const dispatch = useAppDispatch();
   const { gratitudes, loading, error } = useAppSelector((state: any) => state.gratitude);
-  const [diaryOpen, setDiaryOpen]     = useState(false);
   const [prompt, setPrompt]           = useState("");
   const [showAll, setShowAll]         = useState(false);
   const [editingGratitude, setEditingGratitude] = useState<Gratitude | null>(null);
@@ -891,43 +739,15 @@ const GratitudePage = () => {
 
   return (
     <>
-      {/* Background */}
-      <div
-        className="fixed inset-0 -z-10"
-        style={{
-          backgroundImage: `
-            linear-gradient(to bottom,
-              rgba(2,28,38,0.85) 0%,
-              rgba(3,60,80,0.65) 30%,
-              rgba(240,249,255,0.88) 65%,
-              rgba(240,253,250,0.95) 100%
-            ),
-            url('https://img.freepik.com/premium-photo/calm-ocean-moody-sky_1179475-44119.jpg?semt=ais_hybrid&w=740&q=80')
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-          backgroundAttachment: "fixed",
-        }}
-      />
+      <BackgroundImage />
 
-      {/* Diary cover */}
-      <AnimatePresence>
-        {!diaryOpen && <DiaryCover onOpen={() => setDiaryOpen(true)} />}
-      </AnimatePresence>
-
-      {/* Page content */}
-      <motion.div
-        className="w-full min-h-screen font-serif"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: diaryOpen ? 1 : 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="w-full min-h-screen font-serif">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: diaryOpen ? 1 : 0, y: diaryOpen ? 0 : -12 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="mb-6 text-center lg:text-left"
           >
             <p className="text-xs font-semibold tracking-widest text-teal-200/90 uppercase mb-2 flex items-center justify-center lg:justify-start gap-2">
@@ -962,8 +782,8 @@ const GratitudePage = () => {
               {/* Diary write area */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: diaryOpen ? 1 : 0, y: diaryOpen ? 0 : 10 }}
-                transition={{ delay: 0.45 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
               >
                 <DiaryWriteArea
                   onSubmit={t => dispatch(createGratitude(t))}
@@ -981,8 +801,8 @@ const GratitudePage = () => {
               <div className="lg:hidden">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: diaryOpen ? 1 : 0, y: diaryOpen ? 0 : 10 }}
-                  transition={{ delay: 0.35 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
                 >
                   <StreakCalendar gratitudes={gratitudes} />
                 </motion.div>
@@ -993,7 +813,7 @@ const GratitudePage = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.55 }}
+                  transition={{ delay: 0.35 }}
                 >
                   <p className="text-xs font-semibold tracking-widest text-teal-700 uppercase mb-3 flex items-center gap-2">
                     <span className="inline-block w-4 h-px bg-teal-500" />
@@ -1010,7 +830,6 @@ const GratitudePage = () => {
                           key={g._id}
                           gratitude={g}
                           index={i}
-                          onDelete={dispatch}
                           onEdit={setEditingGratitude}
                           isMobile={isMobile}
                           onDeleteClick={setDeletingGratitude}
@@ -1062,8 +881,8 @@ const GratitudePage = () => {
             <div className="hidden lg:block lg:col-span-4 space-y-5">
               <motion.div
                 initial={{ opacity: 0, x: 12 }}
-                animate={{ opacity: diaryOpen ? 1 : 0, x: diaryOpen ? 0 : 12 }}
-                transition={{ delay: 0.3 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
               >
                 <StreakCalendar gratitudes={gratitudes} />
               </motion.div>
@@ -1072,15 +891,16 @@ const GratitudePage = () => {
                 <motion.div
                   initial={{ opacity: 0, x: 12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
+                  transition={{ delay: 0.4 }}
                 >
                   <MemorySurface gratitudes={gratitudes} />
                 </motion.div>
               )}
 
               <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: diaryOpen ? 1 : 0 }}
-                transition={{ delay: 0.65 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55 }}
                 className="rounded-2xl bg-white/90 border border-teal-200 p-4 text-center shadow-md"
               >
                 <p className="text-xl mb-2">🌿</p>
@@ -1098,7 +918,7 @@ const GratitudePage = () => {
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Edit Modal for Desktop */}
       {!isMobile && (
@@ -1110,7 +930,7 @@ const GratitudePage = () => {
         />
       )}
 
-      {/* Edit Bottom Sheet for Mobile - Using the new MobileGratitudeSheet */}
+      {/* Edit Bottom Sheet for Mobile */}
       {isMobile && (
         <MobileGratitudeSheet
           gratitude={editingGratitude}
@@ -1120,12 +940,12 @@ const GratitudePage = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal (works for both mobile and desktop) */}
-      <DeleteConfirmModal
+      {/* Delete Confirmation Modal - Using shared component */}
+      <DeleteModal
         isOpen={!!deletingGratitude}
         onClose={() => setDeletingGratitude(null)}
         onConfirm={handleDeleteGratitude}
-        title={deletingGratitude?.text.substring(0, 50) + "..."}
+        loading={false}
       />
     </>
   );

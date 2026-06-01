@@ -42,7 +42,6 @@ const Signup = () => {
       );
 
       if (registerUser.fulfilled.match(resultAction)) {
-        toast.success("Account created successfully 🌊");
         navigate("/verify-otp");
       } else {
         toast.error(resultAction.payload as string);
@@ -56,7 +55,7 @@ const Signup = () => {
 
   return (
     <AuthLayout
-      title="Create your sanctuary"
+      title="Join Moodyfy"
       subtitle="Begin your mindful journey with Moodyfy"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -101,6 +101,54 @@ const verifyOTP = async(req, res) => {
     }
 };
 
+const resendOTP = async(req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is already verified",
+            });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+        user.otp = otp;
+        user.otpExpiry = otpExpiry;
+        await user.save();
+
+        await transporter.sendMail({
+            from: `"Moodyfy" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: "Your new Moodyfy verification code",
+            html: getOTPEmailTemplate(otp),
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "OTP resent successfully",
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
 const loginUser = async(req, res) => {
     try {
         const { email, password } = req.body;
@@ -169,4 +217,4 @@ const loginUser = async(req, res) => {
     }
 };
 
-module.exports = { registerUser, verifyOTP, loginUser };
+module.exports = { registerUser, verifyOTP, loginUser, resendOTP };

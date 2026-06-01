@@ -12,6 +12,7 @@ import { GlassCard, Section, BreathingLoader } from "../components/insights/Insi
 import { getEmotionPill } from "../components/insights/insightConstants";
 import { MOOD_COLORS } from "../components/insights/insightConstants";
 import { HistoryCard, MoodConstellation, ViewMoreButton } from "../components/insights/InsightSidebar";
+import BackgroundImage from "../components/common/BackgroundImage";
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 const HeroSection = ({ insights }: { insights: AIInsight[] }) => {
@@ -19,12 +20,12 @@ const HeroSection = ({ insights }: { insights: AIInsight[] }) => {
   const pill = latest ? getEmotionPill(latest.emotion) : null;
   return (
     <div className="px-4 sm:px-6 md:px-8 pt-8 pb-6">
-      <p className="text-xs font-semibold tracking-widest text-slate-800 uppercase mb-2 flex items-center gap-2">
+      <p className="text-xs font-semibold tracking-widest text-white uppercase mb-2 flex items-center gap-2">
         <span className="inline-block w-4 h-px bg-teal-500/70" />
         Emotional overview
       </p>
       <h2
-        className="font-serif italic font-light text-slate-900 drop-shadow-sm mb-2"
+        className="font-serif italic font-light text-white drop-shadow-sm mb-2"
         style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", lineHeight: 1.2 }}
       >
         {latest ? `You've been feeling ${latest.emotion}` : "Your inner landscape"}
@@ -179,24 +180,7 @@ const InsightPage = () => {
   return (
     <>
       {/* Background */}
-      <div
-        className="fixed inset-0 -z-10"
-        style={{
-          backgroundImage: `
-            linear-gradient(
-              to bottom,
-              rgba(2,28,38,0.55) 0%,
-              rgba(3,60,80,0.35) 30%,
-              rgba(240,249,255,0.82) 65%,
-              rgba(240,253,250,0.92) 100%
-            ),
-            url('https://img.freepik.com/premium-photo/calm-ocean-moody-sky_1179475-44119.jpg?semt=ais_hybrid&w=740&q=80')
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-          backgroundAttachment: "fixed",
-        }}
-      />
+    <BackgroundImage/>
 
       <div className="w-full min-h-screen font-serif">
         <div className="flex w-full min-h-screen">

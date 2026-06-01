@@ -30,7 +30,7 @@ const Login = () => {
       const resultAction = await dispatch(loginUser(data));
 
       if (loginUser.fulfilled.match(resultAction)) {
-        toast.success("Welcome back 🌿");
+        toast.success("Welcome back!");
         navigate("/dashboard");
       } else {
         toast.error(resultAction.payload as string);

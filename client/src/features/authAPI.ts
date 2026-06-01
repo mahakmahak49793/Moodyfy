@@ -15,6 +15,9 @@ export interface VerifyOTPData {
   email: string;
   otp: string;
 }
+export interface ResendOTPData {
+  email: string;
+}
 
 export interface AuthResponse {
   success: boolean;
@@ -57,5 +60,12 @@ export const verifyOTPAPI = async (
     otpData
   );
 
+  return response.data;
+};
+
+export const resendOTPAPI = async (
+  data: ResendOTPData
+): Promise<AuthResponse> => {
+  const response = await API.post("/auth/resend-otp", data);
   return response.data;
 };

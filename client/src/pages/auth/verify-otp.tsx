@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ShieldCheck, Sparkles, Mail } from "lucide-react";
+import { ShieldCheck, Mail, RotateCcw } from "lucide-react";
 import AuthLayout from "../../layouts/AuthLayout";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { verifyOTP } from "../../features/authSlice";
+import { verifyOTP, resendOTP } from "../../features/authSlice";
+
+const RESEND_COOLDOWN = 30; // seconds
 
 const VerifyOTP = () => {
   const dispatch = useAppDispatch();
@@ -15,19 +17,35 @@ const VerifyOTP = () => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Redirect if no pending email (user landed here directly)
+  // cooldown state
+  const [cooldown, setCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
+
+  // Redirect if no pending email
   useEffect(() => {
     if (!email) navigate("/signup");
   }, [email, navigate]);
 
+  // countdown timer
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; // digits only
-
+    if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // only last char if pasted multiple
+    newOtp[index] = value.slice(-1);
     setOtp(newOtp);
-
-    // auto-focus next
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -56,12 +74,27 @@ const VerifyOTP = () => {
       toast.error("Please enter the complete 6-digit code");
       return;
     }
-
     const resultAction = await dispatch(verifyOTP({ email: email!, otp: otpString }));
-
     if (verifyOTP.fulfilled.match(resultAction)) {
-      toast.success("Email verified successfully! 🎉");
+      toast.success("Email verified successfully!");
       navigate("/login");
+    } else {
+      toast.error(resultAction.payload as string);
+    }
+  };
+
+  const handleResend = async () => {
+    if (cooldown > 0 || resending) return;
+
+    setResending(true);
+    const resultAction = await dispatch(resendOTP({ email: email! }));
+    setResending(false);
+
+    if (resendOTP.fulfilled.match(resultAction)) {
+      toast.success("OTP resent successfully!");
+      setOtp(Array(6).fill("")); 
+      inputRefs.current[0]?.focus();
+      setCooldown(RESEND_COOLDOWN);
     } else {
       toast.error(resultAction.payload as string);
     }
@@ -84,7 +117,7 @@ const VerifyOTP = () => {
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => { inputRefs.current[index] = el }}
+              ref={(el) => { inputRefs.current[index] = el; }}
               type="text"
               inputMode="numeric"
               maxLength={1}
@@ -144,17 +177,31 @@ const VerifyOTP = () => {
           </span>
         </button>
 
-        {/* Resend hint */}
+        {/* Resend */}
         <p className="text-center text-xs font-light text-slate-500">
           Didn't receive the code?{" "}
-          <button
-            type="button"
-            onClick={() => toast("Resend coming soon")}
-            className="font-medium text-[rgb(3,131,153)] hover:text-[rgb(2,100,120)] hover:underline underline-offset-2 transition-all duration-200"
-            style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
-          >
-            Resend OTP
-          </button>
+          {cooldown > 0 ? (
+            <span className="font-medium text-slate-400">
+              Resend in {cooldown}s
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="
+                inline-flex items-center gap-1
+                font-medium text-[rgb(3,131,153)]
+                hover:text-[rgb(2,100,120)] hover:underline
+                underline-offset-2 transition-all duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed
+              "
+              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            >
+              <RotateCcw size={11} className={resending ? "animate-spin" : ""} />
+              {resending ? "Sending..." : "Resend OTP"}
+            </button>
+          )}
         </p>
       </form>
 
