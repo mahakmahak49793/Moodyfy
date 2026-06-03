@@ -12,8 +12,8 @@ import RecentReflections from "../components/dashboard/RecentReflections";
 import GratitudeDiaryCard from "../components/dashboard/GratitudeDiaryCard";
 import MilestoneStrip from "../components/dashboard/Milestonestrip";
 import EmotionalWeather from "../components/dashboard/Emotionalweather";
-import DashboardDiaryCover from "../components/dashboard/DashboardDiaryCover";
 import DailyInsight from "../components/dashboard/DailyInsight";
+import DashboardDiaryCover from "../components/dashboard/DashboarddiaryCover";
 
 const toDateKey = (d: string) => new Date(d).toLocaleDateString("en-CA");
 
@@ -81,8 +81,8 @@ const Dashboard = () => {
     [journals, todayKey],
   );
 
-  const handleSaveJournal = async (text: string, mood?: string) => {
-    await dispatch(createJournal({ text, mood }));
+  const handleSaveJournal = async (text: string, mood: string = "") => {
+    await dispatch(createJournal({ title: text, content: text, mood }));
   };
 
   return (
@@ -270,8 +270,7 @@ const Dashboard = () => {
                   </div>
 
                   <p className="font-serif italic font-light text-gray-600 text-sm leading-relaxed">
-                    "Gratitude doesn't erase hard days — it helps you notice
-                    that good ones exist too."
+                    "Every day may not be good, but there is something good in every day"
                   </p>
 
                   <p className="text-[9px] text-gray-400 mt-3 tracking-widest uppercase font-mono">

@@ -4,7 +4,8 @@ import {
   analyzeJournal,
   createJournal,
 } from "../../features/journal/journalSlice";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, Mic, MicOff } from "lucide-react";
+import { useSpeechToText } from "../../app/useSpeechToText";
 
 const MOODS = [
   { label: "Peaceful", dot: "bg-teal-400", value: "calm" },
@@ -28,6 +29,17 @@ const JournalForm = ({
   const [content, setContent] = useState("");
   const [mood, setMood] = useState("calm");
   const [saved, setSaved] = useState(false);
+  const { isListening, error, startListening, stopListening } = useSpeechToText();
+
+  const handleMicClick = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening((transcript) => {
+        setContent((prev) => prev ? prev + " " + transcript : transcript);
+      });
+    }
+  };
 
   const handleSubmit = async () => {
     if (!content.trim()) return;
@@ -53,8 +65,9 @@ const JournalForm = ({
 
   return (
     <div className="flex flex-col h-full bg-transparent">
-      <div className="px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-8 ">
-        {/* Your Entries Button - visible ONLY on mobile */}
+
+      {/* Mobile sidebar toggle */}
+      <div className="px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-8">
         <button
           onClick={onToggleSidebar}
           className="lg:hidden rounded-full border border-white/50 bg-white/30 backdrop-blur-sm px-3 py-2 text-xs font-light text-white transition-all hover:border-[rgb(3_131_153)] hover:bg-white/40 shadow-sm flex items-center gap-1"
@@ -63,8 +76,9 @@ const JournalForm = ({
           {journalsCount} Journals
         </button>
       </div>
-      {/* Header with New Reflection heading and buttons on top right */}
-      <div className="px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-0 flex justify-between items-start gap-4">
+
+      {/* Header */}
+      <div className="px-4 sm:px-6 md:px-8 pt-6 sm:pt-4 pb-0 flex justify-between items-start gap-4">
         <p
           className="font-serif italic font-semibold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
           style={{ fontSize: "1.35rem", letterSpacing: "-0.01em" }}
@@ -72,25 +86,22 @@ const JournalForm = ({
           New Reflection
         </p>
 
-        {/* Right side buttons container */}
-        <div className="flex gap-2">
-          {/* Save Entry Button - on top right */}
-          <button
-            onClick={handleSubmit}
-            disabled={!content.trim()}
-            className={`rounded-full px-5 py-2 text-sm font-medium tracking-wide transition-all active:scale-95 backdrop-blur-sm shadow-sm whitespace-nowrap ${
-              saved
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "bg-[rgb(3,131,153)] text-white hover:bg-[rgb(2,100,120)] disabled:opacity-40"
-            }`}
-          >
-            {saved ? "✓ Saved" : "Save"}
-          </button>
-        </div>
+        {/* Save button only */}
+        <button
+          onClick={handleSubmit}
+          disabled={!content.trim()}
+          className={`rounded-full px-5 py-2 text-sm font-medium tracking-wide transition-all active:scale-95 backdrop-blur-sm shadow-sm whitespace-nowrap ${
+            saved
+              ? "bg-emerald-600 text-white hover:bg-emerald-700"
+              : "bg-[rgb(3,131,153)] text-white hover:bg-[rgb(2,100,120)] disabled:opacity-40"
+          }`}
+        >
+          {saved ? "✓ Saved" : "Save"}
+        </button>
       </div>
 
       {/* Mood chips */}
-      <div className="px-4 sm:px-6 md:px-8 mt-6 mb-8 flex gap-2 flex-wrap">
+      <div className="px-4 sm:px-6 md:px-8 mt-6 mb-6 flex gap-2 flex-wrap">
         {MOODS.map((m) => (
           <button
             key={m.label}
@@ -107,7 +118,7 @@ const JournalForm = ({
         ))}
       </div>
 
-      {/* Title — italic, transparent */}
+      {/* Title input */}
       <div className="px-4 sm:px-6 md:px-8">
         <input
           value={title}
@@ -119,23 +130,55 @@ const JournalForm = ({
         <div className="h-px bg-gradient-to-r from-transparent via-slate-300/50 to-transparent mb-6" />
       </div>
 
-      {/* Body */}
-      <div className="px-4 sm:px-6 md:px-8 flex-1">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Begin writing. No pressure, just you…"
-          rows={12}
-          className="w-full bg-transparent border-none outline-none text-slate-800 placeholder-slate-700/70 text-sm font-light leading-relaxed resize-none"
-        />
-      </div>
-
-      {/* Footer — character count only */}
-      <div className="px-4 sm:px-6 md:px-8 py-5 sm:py-6 border-t border-white/30 flex items-center mt-auto">
-        <span className="font-mono text-[10px] sm:text-[11px] text-slate-600 drop-shadow-sm">
-          {content.length} characters
+     {/* Textarea with mic inside */}
+<div className="px-4 sm:px-6 md:px-8 flex-1 pb-6">
+  <div
+    className={`relative rounded-2xl border transition-all duration-200 ${
+      isListening
+        ? "border-rose-400/60 bg-white/20"
+        : "border-white/30 bg-white/15"
+    } backdrop-blur-sm`}
+  >
+    {/* Mic button — top right */}
+    <div className="absolute top-3 right-3 z-10">
+      <button
+        onClick={handleMicClick}
+        title={isListening ? "Stop recording" : "Speak to write"}
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all backdrop-blur-sm ${
+          isListening
+            ? "bg-rose-500/90 text-white animate-pulse"
+            : "bg-white/40 border border-white/50 text-slate-700 hover:bg-white/60"
+        }`}
+      >
+        {isListening ? <MicOff size={13} /> : <Mic size={13} />}
+        {/* Text label — desktop only */}
+        <span className="hidden sm:inline">
+          {isListening ? "Stop" : "Speak"}
         </span>
-      </div>
+      </button>
+    </div>
+
+    <textarea
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+      placeholder="Start expressing yourself…"
+      rows={10}
+      className="w-full bg-transparent outline-none text-slate-800 placeholder-slate-600/60 text-sm font-light leading-relaxed resize-none px-4 pt-4 pb-10 pr-16 sm:pr-32"
+    />
+
+    {/* Bottom bar — character count only */}
+    <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-center border-t border-white/20 rounded-b-2xl">
+      <span className="font-mono text-[10px] text-slate-500">
+        {content.length} characters
+      </span>
+    </div>
+  </div>
+
+  {error && (
+    <p className="mt-2 text-xs text-rose-300">{error}</p>
+  )}
+</div>
+
     </div>
   );
 };

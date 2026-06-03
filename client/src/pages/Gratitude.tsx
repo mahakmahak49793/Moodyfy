@@ -905,8 +905,7 @@ const GratitudePage = () => {
               >
                 <p className="text-xl mb-2">🌿</p>
                 <p className="font-serif italic font-light text-gray-600 text-xs leading-relaxed">
-                  Gratitude doesn't erase hard days — it helps you notice that good ones exist too.
-                </p>
+Gratitude is not about having everything - it's about noticing everything.                </p>
               </motion.div>
             </div>
           </div>

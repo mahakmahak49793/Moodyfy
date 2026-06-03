@@ -12,11 +12,6 @@ const appLinks = [
   { label: "Gratitude", to: "/gratitude" },
 ];
 
-const publicLinks = [
-  { label: "Features", to: "/features" },
-  { label: "About", to: "/about" },
-];
-
 const authPages = ["/login", "/signup", "/verify-otp"];
 
 const Navbar = () => {
@@ -70,20 +65,14 @@ const Navbar = () => {
 
           <Logo isLoggedIn={isLoggedIn} />
 
-          {/* DESKTOP NAV LINKS */}
-          {!isAuthPage && (
+          {/* DESKTOP NAV LINKS — logged in only */}
+          {!isAuthPage && isLoggedIn && (
             <div className="hidden items-center gap-2 md:flex">
-              {isLoggedIn
-                ? appLinks.map((link) => (
-                    <NavLink key={link.to} to={link.to} className={linkClass}>
-                      {link.label}
-                    </NavLink>
-                  ))
-                : publicLinks.map((link) => (
-                    <NavLink key={link.to} to={link.to} className={linkClass}>
-                      {link.label}
-                    </NavLink>
-                  ))}
+              {appLinks.map((link) => (
+                <NavLink key={link.to} to={link.to} className={linkClass}>
+                  {link.label}
+                </NavLink>
+              ))}
             </div>
           )}
 
@@ -92,7 +81,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               {isLoggedIn ? (
                 <>
-                  {/* Avatar — always visible */}
+                  {/* Avatar */}
                   <div
                     onClick={() => navigate("/dashboard")}
                     className="
@@ -106,7 +95,7 @@ const Navbar = () => {
                     {initials}
                   </div>
 
-                  {/* Logout — always visible */}
+                  {/* Logout */}
                   <button
                     onClick={() => setShowLogoutModal(true)}
                     className="
@@ -120,7 +109,7 @@ const Navbar = () => {
                     <LogOut size={17} />
                   </button>
 
-                  {/* Mobile hamburger — nav links only */}
+                  {/* Mobile hamburger */}
                   <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     className="
@@ -163,19 +152,6 @@ const Navbar = () => {
                       Get Started
                     </NavLink>
                   )}
-
-                  {/* Mobile hamburger — public links */}
-                  <button
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="
-                      md:hidden flex items-center justify-center
-                      h-9 w-9 rounded-full
-                      text-slate-600 hover:bg-slate-100
-                      transition-all duration-200
-                    "
-                  >
-                    {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                  </button>
                 </>
               )}
             </div>
@@ -184,30 +160,19 @@ const Navbar = () => {
           {isAuthPage && <div />}
         </div>
 
-        {/* MOBILE DROPDOWN — nav links only */}
-        {!isAuthPage && mobileMenuOpen && (
+        {/* MOBILE DROPDOWN — logged in only */}
+        {!isAuthPage && isLoggedIn && mobileMenuOpen && (
           <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-md px-4 py-3 space-y-1">
-            {isLoggedIn
-              ? appLinks.map((link) => (
-                  <NavLink
-                    key={link.to}
-                    to={link.to}
-                    className={mobileLinkClass}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </NavLink>
-                ))
-              : publicLinks.map((link) => (
-                  <NavLink
-                    key={link.to}
-                    to={link.to}
-                    className={mobileLinkClass}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </NavLink>
-                ))}
+            {appLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={mobileLinkClass}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </NavLink>
+            ))}
           </div>
         )}
       </nav>
