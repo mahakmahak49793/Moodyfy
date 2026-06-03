@@ -254,7 +254,7 @@ const CalendarStreak = ({ entries, onNavigateToEntry }: Props) => {
                           </span>
                         )}
                         <p className="font-serif italic text-slate-700 text-xs leading-relaxed truncate">
-                          "{entry.content}"
+                          "{entry.text}"
                         </p>
                         <p className="font-mono text-[9px] text-teal-500 mt-1.5">
                           {new Date(entry.createdAt).toLocaleTimeString("en-GB", {
