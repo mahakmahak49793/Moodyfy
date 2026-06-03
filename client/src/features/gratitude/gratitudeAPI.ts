@@ -13,18 +13,18 @@ export const getGratitudesAPI = async (): Promise<{
   count: number;
   gratitudes: Gratitude[];
 }> => {
-  const response = await API.get("/gratitude");
+  const response = await API.get("/api/gratitude");
   return response.data;
 };
 
 export const deleteGratitudeAPI = async (
   id: string
 ): Promise<{ success: boolean; message: string }> => {
-  const response = await API.delete(`/gratitude/${id}`);
+  const response = await API.delete(`/api/gratitude/${id}`);
   return response.data;
 };
 
 export const updateGratitudeAPI = async (id: string, text: string) => {
-  const response = await API.put(`/gratitude/${id}`, { text });
+  const response = await API.put(`/api/gratitude/${id}`, { text });
   return response.data;
 };
