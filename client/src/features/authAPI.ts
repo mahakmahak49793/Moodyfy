@@ -34,7 +34,7 @@ export const registerUserAPI = async (
   userData: RegisterData
 ): Promise<AuthResponse> => {
   const response = await API.post(
-    "/api/auth/register",
+    "/auth/register",
     userData
   );
 
@@ -45,7 +45,7 @@ export const loginUserAPI = async (
   userData: LoginData
 ): Promise<AuthResponse> => {
   const response = await API.post(
-    "/api/auth/login",
+    "/auth/login",
     userData
   );
 
@@ -56,7 +56,7 @@ export const verifyOTPAPI = async (
   otpData: VerifyOTPData
 ): Promise<AuthResponse> => {
   const response = await API.post(
-    "/api/auth/verify-otp",
+    "/auth/verify-otp",
     otpData
   );
 
@@ -66,6 +66,6 @@ export const verifyOTPAPI = async (
 export const resendOTPAPI = async (
   data: ResendOTPData
 ): Promise<AuthResponse> => {
-  const response = await API.post("/api/auth/resend-otp", data);
+  const response = await API.post("/auth/resend-otp", data);
   return response.data;
 };
