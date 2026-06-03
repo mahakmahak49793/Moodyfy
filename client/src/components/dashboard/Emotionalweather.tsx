@@ -61,10 +61,11 @@ const EmotionalWeather = ({ entries }: Props) => {
   const dominantMeta = dominantMood ? MOOD_META[dominantMood] : null;
   const totalEntries = last7.length;
 
-  const getMoodPercentage = (mood: string) => {
-    const count = moodCounts.find(([m]) => m === mood)?.[1] || 0;
-    return totalEntries > 0 ? Math.round((count / totalEntries) * 100) : 0;
-  };
+ const getMoodPercentage = (mood: string | null) => {
+  if (!mood) return 0;
+  const count = moodCounts.find(([m]) => m === mood)?.[1] || 0;
+  return totalEntries > 0 ? Math.round((count / totalEntries) * 100) : 0;
+};
 
   if (!entries.length) return null;
 

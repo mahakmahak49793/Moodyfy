@@ -2,7 +2,6 @@ import type { Journal } from "../../features/journal/journalTypes";
 import type { AIInsight } from "../../features/insights/insightsTypes";
 import { GlassCard } from "./InsightPrimitives";
 import { getEmotionPill } from "./insightConstants";
-import { useState } from "react";
 
 // ─── Mood constellation ───────────────────────────────────────────────────────
 const MOOD_ORB: Record<string, { color: string; glow: string; text: string }> = {

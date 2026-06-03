@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef} from "react";
 import {
   motion,
   
@@ -266,7 +266,7 @@ const BentoGrid = () => (
   </div>
 );
 
-const ModernHero = ({ isLoggedIn, onExploreClick, onStartClick }: ModernHeroProps) => {
+const ModernHero = ({onExploreClick, onStartClick }: ModernHeroProps) => {
   return (
     <section
       className="relative  overflow-hidden"

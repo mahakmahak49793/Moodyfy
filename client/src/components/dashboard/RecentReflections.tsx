@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
 
 interface JournalEntry {
   _id: string;
@@ -34,10 +33,7 @@ const formatRelative = (dateStr: string) => {
 const INITIAL_SHOW = 4;
 
 const RecentReflections = ({ entries, onViewAll }: Props) => {
-  const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? entries : entries.slice(0, INITIAL_SHOW);
-  const hasMore = entries.length > INITIAL_SHOW;
-
+const visible = entries.slice(0, INITIAL_SHOW);
   if (!entries.length) return null;
 
   return (
@@ -96,7 +92,7 @@ const RecentReflections = ({ entries, onViewAll }: Props) => {
                 </div>
 
                 <p className="text-sm font-light font-serif italic leading-relaxed text-slate-600 line-clamp-3">
-                  "{entry.content}"
+                  "{entry.text}"
                 </p>
 
                 <div className="mt-3 h-px bg-gradient-to-r from-transparent via-teal-200/40 to-transparent" />
