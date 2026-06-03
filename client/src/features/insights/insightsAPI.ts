@@ -5,6 +5,6 @@ import type { AIInsight } from "./insightsTypes";
 export const analyzeJournalAPI = async (
   journalId: string,
 ): Promise<{ success: boolean; insight: AIInsight }> => {
-  const response = await API.post("/api/ai/analyze", { journalId });
+  const response = await API.post("/ai/analyze", { journalId });
   return response.data;
 };
