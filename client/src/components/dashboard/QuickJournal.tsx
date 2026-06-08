@@ -29,22 +29,32 @@ const QuickJournal = ({ onSave, loading, onNavigateToFull }: Props) => {
   const [focused, setFocused] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isHoveringNav, setIsHoveringNav] = useState(false);
+  const [showMoodWarning, setShowMoodWarning] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   const prompt = PROMPTS[new Date().getDay() % PROMPTS.length];
 
   const handleSave = async () => {
     const t = text.trim();
+    
+    // Check if mood is selected
+    if (selectedMood === null) {
+      setShowMoodWarning(true);
+      setTimeout(() => setShowMoodWarning(false), 2000);
+      return;
+    }
+    
     if (!t || loading) return;
-    const mood =
-      selectedMood !== null
-        ? `${MOODS[selectedMood].emoji} ${MOODS[selectedMood].label}`
-        : undefined;
+    
+    const mood = MOODS[selectedMood].value;
     await onSave(t, mood);
     setText("");
     setSelectedMood(null);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
+
+  // Check if save should be disabled
+  const isSaveDisabled = !text.trim() || loading || selectedMood === null;
 
   return (
     <motion.div
@@ -113,8 +123,6 @@ const QuickJournal = ({ onSave, loading, onNavigateToFull }: Props) => {
                 <span className="text-xs font-medium bg-gradient-to-r from-amber-700 to-teal-700 bg-clip-text text-transparent">
                   {isHoveringNav ? "Pour your heart out" : "Deep journal"}
                 </span>
-                
-        
               </motion.button>
             )}
 
@@ -130,21 +138,55 @@ const QuickJournal = ({ onSave, loading, onNavigateToFull }: Props) => {
         </div>
       </div>
 
-      {/* Mood pills */}
-      <div className="px-5 pb-2 flex flex-wrap gap-1.5">
-        {MOODS.map((m, i) => (
-          <button
-            key={m.label}
-            onClick={() => setSelectedMood(i === selectedMood ? null : i)}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-light border transition-all duration-200 ${
-              selectedMood === i
-                ? "border-teal-400 bg-teal-50 text-teal-700"
-                : "border-gray-200 text-gray-500 hover:border-teal-300"
-            }`}
-          >
-            {m.emoji} {m.label}
-          </button>
-        ))}
+      {/* Mood pills with subtle required indicator */}
+      <div className="px-5 pb-2">
+        <div className="flex items-center justify-between mb-1.5">
+          <p className="text-[9px] font-mono text-teal-500/70 uppercase tracking-wider">
+            How are you feeling? <span className="text-rose-400">*</span>
+          </p>
+          {selectedMood === null && text.trim() && (
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-[9px] font-mono text-amber-500"
+            >
+              Select a mood to save
+            </motion.p>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {MOODS.map((m, i) => (
+            <button
+              key={m.label}
+              onClick={() => {
+                setSelectedMood(i === selectedMood ? null : i);
+                setShowMoodWarning(false);
+              }}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-light border transition-all duration-200 ${
+                selectedMood === i
+                  ? "border-teal-400 bg-teal-50 text-teal-700 shadow-sm"
+                  : "border-gray-200 text-gray-500 hover:border-teal-300 hover:bg-teal-50/50"
+              }`}
+            >
+              {m.emoji} {m.label}
+            </button>
+          ))}
+        </div>
+        
+        {/* Mood warning message */}
+        <AnimatePresence>
+          {showMoodWarning && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-2 flex items-center gap-1.5 text-amber-600 text-xs"
+            >
+              <span>⚠️</span>
+              <span>Please select how you're feeling before saving</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Textarea */}
@@ -175,7 +217,7 @@ const QuickJournal = ({ onSave, loading, onNavigateToFull }: Props) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => { setText(""); setSelectedMood(null); }}
+                onClick={() => { setText(""); setSelectedMood(null); setShowMoodWarning(false); }}
                 className="text-xs font-light text-gray-400 hover:text-gray-600 px-2 py-1"
               >
                 Clear
@@ -183,24 +225,37 @@ const QuickJournal = ({ onSave, loading, onNavigateToFull }: Props) => {
             )}
           </AnimatePresence>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={handleSave}
-            disabled={!text.trim() || loading}
-            className="rounded-full bg-teal-500/20 border border-teal-500/50 px-5 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-500/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-          >
-            {loading ? (
-              <>
-                <span className="w-2.5 h-2.5 rounded-full border border-teal-700/40 border-t-teal-700 animate-spin" />
-                Saving…
-              </>
-            ) : saved ? (
-              "✓ Saved"
-            ) : (
-              "🌿 Save entry"
+          <div className="relative">
+            <motion.button
+              whileHover={!isSaveDisabled ? { scale: 1.02 } : {}}
+              whileTap={!isSaveDisabled ? { scale: 0.97 } : {}}
+              onClick={handleSave}
+              disabled={isSaveDisabled}
+              className={`rounded-full px-5 py-1.5 text-sm font-medium transition-all flex items-center gap-1.5 ${
+                isSaveDisabled
+                  ? "bg-gray-200/50 border border-gray-300/50 text-gray-400 cursor-not-allowed"
+                  : "bg-teal-500/20 border border-teal-500/50 text-teal-800 hover:bg-teal-500/30"
+              }`}
+            >
+              {loading ? (
+                <>
+                  <span className="w-2.5 h-2.5 rounded-full border border-teal-700/40 border-t-teal-700 animate-spin" />
+                  Saving…
+                </>
+              ) : saved ? (
+                "✓ Saved"
+              ) : (
+                "🌿 Save entry"
+              )}
+            </motion.button>
+            
+            {/* Tooltip for disabled state */}
+            {isSaveDisabled && !loading && !saved && selectedMood === null && text.trim() && (
+              <div className="absolute -top-8 right-0 whitespace-nowrap bg-gray-800 text-white text-[10px] px-2 py-1 rounded shadow-lg pointer-events-none">
+                Select a mood first
+              </div>
             )}
-          </motion.button>
+          </div>
         </div>
       </div>
     </motion.div>

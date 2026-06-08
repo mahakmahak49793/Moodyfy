@@ -183,7 +183,7 @@ const EmotionalWeather = ({ entries }: Props) => {
             <div className="absolute top-1.5 left-2 text-teal-300 text-[10px]">"</div>
             <p className="font-serif italic text-[11px] text-slate-600 leading-relaxed pl-4 pr-2">
               {moodCounts.length === 1 ? (
-                <>This week, you've been mostly feeling <span style={{ color: dominantMeta?.text }} className="font-medium">{dominantMood}</span>. That's completely okay — every emotion has its place.</>
+                <>This week, you've been mostly feeling <span style={{ color: dominantMeta?.text }} className="font-medium">{dominantMood}</span></>
               ) : (
                 <>Your emotions have been between <span style={{ color: MOOD_META[moodCounts[0][0]]?.text }} className="font-medium">{moodCounts[0][0]}</span> and <span style={{ color: MOOD_META[moodCounts[1][0]]?.text }} className="font-medium">{moodCounts[1][0]}</span> this week — a beautiful reflection of being human.</>
               )}

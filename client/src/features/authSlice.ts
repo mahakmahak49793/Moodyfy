@@ -129,14 +129,14 @@ const authSlice = createSlice({
 
 extraReducers: (builder) => {
   builder
-    // REGISTER
+    
     .addCase(registerUser.pending, (state) => {
       state.loading = true;
       state.error = null;
     })
     .addCase(registerUser.fulfilled, (state, action) => {
       state.loading = false;
-      state.pendingEmail = action.meta.arg.email; // 👈 store email from the request arg
+      state.pendingEmail = action.meta.arg.email; 
     })
     .addCase(registerUser.rejected, (state, action) => {
       state.loading = false;

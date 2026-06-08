@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface JournalEntry {
   _id: string;
-  text: string;
+  content: string;
   mood?: string;
   createdAt: string;
 }
@@ -21,7 +21,7 @@ const CARD_ACCENT = [
 
 const formatRelative = (dateStr: string) => {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   if (diff < 172800) return "Yesterday";
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -92,7 +92,7 @@ const visible = entries.slice(0, INITIAL_SHOW);
                 </div>
 
                 <p className="text-sm font-light font-serif italic leading-relaxed text-slate-600 line-clamp-3">
-                  "{entry.text}"
+                  "{entry.content}"
                 </p>
 
                 <div className="mt-3 h-px bg-gradient-to-r from-transparent via-teal-200/40 to-transparent" />

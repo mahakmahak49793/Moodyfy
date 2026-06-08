@@ -6,7 +6,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { verifyOTP, resendOTP } from "../../features/authSlice";
 
-const RESEND_COOLDOWN = 30; // seconds
+const RESEND_COOLDOWN = 30;
 
 const VerifyOTP = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +21,6 @@ const VerifyOTP = () => {
   const [cooldown, setCooldown] = useState(0);
   const [resending, setResending] = useState(false);
 
-  // Redirect if no pending email
   useEffect(() => {
     if (!email) navigate("/signup");
   }, [email, navigate]);

@@ -81,9 +81,21 @@ const Dashboard = () => {
     [journals, todayKey],
   );
 
-  const handleSaveJournal = async (text: string, mood: string = "") => {
-    await dispatch(createJournal({ title: text, content: text, mood }));
-  };
+ const handleSaveJournal = async (text: string, mood?: string) => {
+  if (!text.trim()) return;
+  
+  try {
+    const result = await dispatch(createJournal({ 
+      title: text.slice(0, 100), // First 100 chars as title
+      content: text,
+      mood: mood || "", // Pass the mood string (e.g., "🌿 Peaceful")
+    })).unwrap();
+    
+    console.log("Journal saved successfully:", result);
+  } catch (error) {
+    console.error("Failed to save journal:", error);
+  }
+};
 
   return (
     <>
