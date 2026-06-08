@@ -17,7 +17,7 @@ const MOODS = [
 
 const PROMPTS = [
   "What's weighing on your heart today?",
-  "Describe how your day felt in three words…",
+  "Describe how your day felt",
   "What moment today would you like to hold on to?",
   "What are you learning about yourself lately?",
   "What would make tomorrow feel lighter?",
