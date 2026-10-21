@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const transporter = require("../config/mailer");
 const { getOTPEmailTemplate } = require("../config/emailTemplates");
 
-const registerUser = async(req, res) => {
+
+const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -16,6 +17,7 @@ const registerUser = async(req, res) => {
         }
 
         const existingUser = await User.findOne({ email });
+
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -24,37 +26,29 @@ const registerUser = async(req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
         await User.create({
             name,
             email,
             password: hashedPassword,
-            otp,
-            otpExpiry,
-            isVerified: false,
+            isVerified: true,
+            otp: null,
+            otpExpiry: null,
         });
 
-        await transporter.sendMail({
-            from: `"Moodyfy" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "Your Moodyfy verification code",
-            html: getOTPEmailTemplate(otp),
-        });
-
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
-            message: "OTP sent to your email",
+            message: "Account created successfully. You can now log in.",
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
     }
 };
+
 
 const verifyOTP = async(req, res) => {
     try {
