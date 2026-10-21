@@ -44,9 +44,10 @@ const onSubmit = async (data: SignupFormData) => {
     );
 
     if (registerUser.fulfilled.match(resultAction)) {
-      toast.success("Account created successfully! Please log in.");
-      navigate("/login");
-    } else {
+  navigate("/login", {
+    state: { signupSuccess: true },
+  });
+} else {
       toast.error(resultAction.payload as string);
     }
   } catch (error) {
