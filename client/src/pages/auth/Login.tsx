@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation} from "react-router-dom";
 import toast from "react-hot-toast";
 import AuthLayout from "../../layouts/AuthLayout";
 import { useAppDispatch } from "../../app/hooks";
 import { loginUser } from "../../features/authSlice";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 
 interface LoginFormData {
@@ -23,6 +23,21 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>();
+
+  
+const location = useLocation();
+
+useEffect(() => {
+  if (location.state?.signupSuccess) {
+    toast.success("User created successfully!");
+
+    navigate(location.pathname, {
+      replace: true,
+      state: null,
+    });
+  }
+}, [location, navigate]);
+
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
