@@ -30,28 +30,32 @@ const Signup = () => {
 
   const password = watch("password");
 
-  const onSubmit = async (data: SignupFormData) => {
-    setIsLoading(true);
-    try {
-      const resultAction = await dispatch(
-        registerUser({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-        })
-      );
+  
+const onSubmit = async (data: SignupFormData) => {
+  setIsLoading(true);
 
-      if (registerUser.fulfilled.match(resultAction)) {
-        navigate("/verify-otp");
-      } else {
-        toast.error(resultAction.payload as string);
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setIsLoading(false);
+  try {
+    const resultAction = await dispatch(
+      registerUser({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      })
+    );
+
+    if (registerUser.fulfilled.match(resultAction)) {
+      toast.success("Account created successfully! Please log in.");
+      navigate("/login");
+    } else {
+      toast.error(resultAction.payload as string);
     }
-  };
+  } catch (error) {
+    toast.error("Something went wrong");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <AuthLayout
